@@ -1,0 +1,74 @@
+/**************************************************************************
+  * A class that contains public methods to manipulate data in a 
+  * specified database. 
+  * 
+  ************************************************************************/
+
+public class DbController{
+    
+    private final String DbUrl; // takes the adress of the server 
+    private final String username; // takes the username 
+    private final String pass;    // takes the password 
+    private Connection conn; 
+    
+    // the constructor takes arguments to establish a connection 
+    public DbController(String DbUrl, String username, String pass) {
+        
+        // assigns all instance variables     
+        DbUrl = DbUrl.this; 
+        username = username.this; 
+        pass    = pass.this; 
+        
+        try{
+            // Connect to the server 
+            conn = DriverManager.getConnection(dbUrl, user, pass); 
+        }
+        catch (SQLException ex) {
+            System.out.println("Error at constructor"); 
+        }
+        
+    } // termination of constructor 
+    
+    public boolean addTable(String) {
+        return true;
+    }
+                                
+    public boolean addData(String tableName, String[] columnNames, 
+                                                       String[] value) {
+        String sql = "INSERT INTO " + tableName + "("; 
+        String column = ""; 
+        
+        for(int i = 0; i < columnNames.length; i++) {
+            
+            if ( i =! columnNames.length - 1) {
+                column += columnNames[i] + ","
+            }
+            
+            else column += columnNames[i]; 
+        }
+        
+        sql = sql + column + ")" + " VALUES(";
+        
+        String values = ""; 
+        
+        for(int i = 0; i < value.length; i++) {
+            
+            if ( i =! value.length - 1) {
+                values += value[i] + ","
+            }
+            
+            else values += value[i]; 
+        }
+        
+        sql = sql + values +")"; 
+        
+        Statement adder = conn.createStatement(); 
+        
+        return true; 
+    }
+                            
+                            public static void main(String args[]){
+                                // code to test each method in DbController    
+                            }
+                            
+                            }
