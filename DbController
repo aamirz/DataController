@@ -9,7 +9,7 @@ public class DbController{
     private final String DbUrl; // takes the adress of the server 
     private final String username; // takes the username 
     private final String pass;    // takes the password 
-    private Connection conn; 
+    private Connection conn;      // establishes a connection with the server 
     
     // the constructor takes arguments to establish a connection 
     public DbController(String DbUrl, String username, String pass) {
@@ -24,7 +24,7 @@ public class DbController{
             conn = DriverManager.getConnection(dbUrl, user, pass); 
         }
         catch (SQLException ex) {
-            System.out.println("Error at constructor"); 
+            System.out.println(ex.getMessage()); 
         }
         
     } // termination of constructor 
@@ -32,9 +32,12 @@ public class DbController{
     public boolean addTable(String) {
         return true;
     }
-                                
+    
+    /* a method to add one row of data into a specified table 
+     * the arguments are the table name, an array of column names,
+     * and an array of values */
     public boolean addData(String tableName, String[] columnNames, 
-                                                       String[] value) {
+                           String[] value) {
         String sql = "INSERT INTO " + tableName + "("; 
         String column = ""; 
         
@@ -62,13 +65,18 @@ public class DbController{
         
         sql = sql + values +")"; 
         
-        Statement adder = conn.createStatement(); 
         
-        return true; 
+        
+        Statement adder = conn.createStatement(); 
+        int rowAffected = adder.executeUpdate(sql); 
+        
+        
+        if (rowAffected === 1) return true; 
+        else return false; 
     }
-                            
-                            public static void main(String args[]){
-                                // code to test each method in DbController    
-                            }
-                            
-                            }
+    
+    public static void main(String args[]){
+        // code to test each method in DbController    
+    }
+    
+}
