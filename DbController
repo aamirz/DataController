@@ -37,10 +37,13 @@ public class DbController{
      * the arguments are the table name, an array of column names,
      * and an array of values */
     public boolean addData(String tableName, String[] columnNames, 
-                           String[] value) {
+          String[] value) {
+        
+        // String to hold the sql command 
         String sql = "INSERT INTO " + tableName + "("; 
         String column = ""; 
         
+        // builds the column names 
         for(int i = 0; i < columnNames.length; i++) {
             
             if ( i =! columnNames.length - 1) {
@@ -54,6 +57,7 @@ public class DbController{
         
         String values = ""; 
         
+        // builds the values 
         for(int i = 0; i < value.length; i++) {
             
             if ( i =! value.length - 1) {
@@ -66,7 +70,7 @@ public class DbController{
         sql = sql + values +")"; 
         
         
-        
+        // Communicates witht the database and adds a row
         Statement adder = conn.createStatement(); 
         int rowAffected = adder.executeUpdate(sql); 
         
