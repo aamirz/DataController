@@ -1,86 +1,140 @@
-/**************************************************************************
-  * A class that contains public methods to manipulate data in a 
-  * specified database. 
-  * 
-  ************************************************************************/
-
-public class DbController{
-    
-    private final String DbUrl; // takes the adress of the server 
-    private final String username; // takes the username 
-    private final String pass;    // takes the password 
-    private Connection conn;      // establishes a connection with the server 
-    
-    // the constructor takes arguments to establish a connection 
-    public DbController(String DbUrl, String username, String pass) {
-        
-        // assigns all instance variables     
-        DbUrl = DbUrl.this; 
-        username = username.this; 
-        pass    = pass.this; 
-        
-        try{
-            // Connect to the server 
-            conn = DriverManager.getConnection(dbUrl, user, pass); 
-        }
-        catch (SQLException ex) {
-            System.out.println(ex.getMessage()); 
-        }
-        
-    } // termination of constructor 
-    
-    public boolean addTable(String) {
-        return true;
-    }
-    
-    /* a method to add one row of data into a specified table 
-     * the arguments are the table name, an array of column names,
-     * and an array of values */
-    public boolean addData(String tableName, String[] columnNames, 
-          String[] value) {
-        
-        // String to hold the sql command 
-        String sql = "INSERT INTO " + tableName + "("; 
-        String column = ""; 
-        
-        // builds the column names 
-        for(int i = 0; i < columnNames.length; i++) {
-            
-            if ( i =! columnNames.length - 1) {
-                column += columnNames[i] + ","
-            }
-            
-            else column += columnNames[i]; 
-        }
-        
-        sql = sql + column + ")" + " VALUES(";
-        
-        String values = ""; 
-        
-        // builds the values 
-        for(int i = 0; i < value.length; i++) {
-            
-            if ( i =! value.length - 1) {
-                values += value[i] + ","
-            }
-            
-            else values += value[i]; 
-        }
-        
-        sql = sql + values +")"; 
-        
-        
-        // Communicates witht the database and adds a row
-        Statement adder = conn.createStatement(); 
-        int rowAffected = adder.executeUpdate(sql); 
-        
-        
-        if (rowAffected === 1) return true; 
-        else return false; 
-    }
-    
-    public static void main(String args[]){
-        // code to test each method in DbController    
-    }
-    
-}
+	/**************************************************************************
+	 * A class that contains public methods to manipulate data in a 
+	 * specified database. 
+	 * 
+	 ************************************************************************/
+	
+	import java.sql.*;
+	
+	
+	public class DbController{
+	   
+	 
+	   private Connection conn;      // establishes a connection with the server 
+	   
+	   // the constructor takes arguments to establish a connection 
+	   public DbController(String DbUrl, String username, String pass) {     
+	
+		// Connect to the server 
+	       try{
+	           conn = DriverManager.getConnection(DbUrl, username, pass); 
+	       }
+	       catch (SQLException ex) {
+	           System.out.println(ex.getMessage()); 
+	       }
+	       
+	   } // termination of constructor 
+	   
+	   // add table method
+	   public boolean addTable(String tableName) {
+	       return true;
+	   }
+	   
+	   /* a method to add one row of data into a specified table 
+	    * the arguments are the table name, an array of column names,
+	    * and an array of values */
+	   public boolean addData(String tableName, String[] columnNames, 
+	         String[] value) throws SQLException {
+	       
+	       // String to hold the insert command 
+	       String sql = "INSERT INTO " + tableName + "("; 
+	       String column = ""; 
+	       
+	       // builds the column names 
+	       for(int i = 0; i < columnNames.length; i++) {
+	           
+	           if ( i != columnNames.length - 1) {
+	               column += columnNames[i] + ",";
+	           }
+	           
+	           else column += columnNames[i]; 
+	       }
+	       
+	       sql = sql + column + ")" + " VALUES(";
+	       
+	       String values = ""; 
+	       
+	       // builds the values 
+	       for(int i = 0; i < value.length; i++) {
+	           
+	           if ( i != value.length - 1) {
+	               values += value[i] + ",";
+	           }
+	           
+	           else values += value[i]; 
+	       }
+	       
+	       sql = sql + values +")"; 
+	       
+	       
+	       // Communicates with the database and adds a row
+	       Statement adder = null;
+		try {
+			adder = conn.createStatement();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+	       int rowAffected = adder.executeUpdate(sql); 
+	       
+	       
+	       if (rowAffected == 1) return true; 
+	       else return false; 
+	   }
+	   
+	   // method for populating the feed
+		 public String[] Search(String tableName, String column[]) {
+			   
+			   Statement myStmt = null;
+			   int N = column.length;
+			   String postSummary[] = new String[N];
+		   try {
+			   myStmt = conn.createStatement(); 
+		       
+		       ResultSet myRs = myStmt.executeQuery("select * from" + tableName);
+		       
+		       while(myRs.next()) {
+		    	   for(int i = 0; i < N; i++) {
+		    	   postSummary[i] = myRs.getString(column[i]); 
+		                                                 }
+		       }
+		   } catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		   
+		   
+		   return postSummary; // return statement
+		   } 
+	   
+	   
+	   // method for populating the feed
+	 /*  public String[] populateFeed(String tableName, String column[]) {
+		   
+		   Statement myStmt = null;
+		   int N = column.length;
+		   String postSummary[] = new String[N];
+	   try {
+		   myStmt = conn.createStatement(); 
+	       
+	       ResultSet myRs = myStmt.executeQuery("select * from" + tableName);
+	       
+	       while(myRs.next()) {
+	    	   for(int i = 0; i < N; i++) {
+	    	   postSummary[i] = myRs.getString(column[i]); 
+	                                                 }
+	       }
+	   } catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	   
+	   
+	   return postSummary; // return statement
+	   } */
+	   
+	   public static void main(String args[]){
+	       // code to test each method in DbController    
+	   }
+	   
+	}
