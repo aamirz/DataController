@@ -79,7 +79,7 @@
 		  
 		 try {
 			 Statement stmt = conn.createStatement(); 
-			 testing = stmt.executeUpdate(sql);
+			 stmt.executeUpdate(sql);
 		 } catch(SQLException e) {
 			 System.out.println("Sorry, Exceptions");
 		 }
