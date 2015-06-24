@@ -1,163 +1,157 @@
-package libs;
+	/**************************************************************************
+	 * A class that contains public methods to manipulate data in a 
+	 * specified database. 
+	 * 
+	 ************************************************************************/
+	
+	package libs;
+	import java.sql.*;
 
-/**************************************************************************
- * A class that contains public methods to manipulate data in a 
- * specified database. 
- * 
- ************************************************************************/
 
-import java.sql.*;
+	public class DbController { 
+		
+		public static void main(String args[]) {
 
-
-public class DbController{ 
-   
- private Connection conn;      // establishes a connection with the server 
-   
-   // the constructor takes arguments to establish a connection 
-   public DbController(String DbUrl, String username, String pass) {     
-
- // Connect to the server 
-       try{
-           conn = DriverManager.getConnection(DbUrl, username, pass); 
-       }
-       catch (SQLException ex) {
-           System.out.println(ex.getMessage()); 
-       }
-       
-   } // termination of constructor 
-   
-   // add table method
-   public boolean addTable(String tableName) {
-       return true;
-   }
-   
-   /* adds one record into a specified table 
-    * the arguments are the table name, an array of column names,
-    * and an array of values, values correspond to column names */
-   public boolean addData(String tableName, String[] columnNames, 
-         String[] value) throws SQLException {
-       
-       // String to hold the insert command 
-       String sql = "INSERT INTO " + tableName + "( "; 
-       String column = ""; 
-       
-       // builds the column names 
-       for(int i = 0; i < columnNames.length; i++) {
-           
-           if ( i != columnNames.length - 1) {
-               column += columnNames[i] + ",";
-           }
-           
-           else column += columnNames[i]; 
-       }
-       
-       sql = sql + column + " )" + " VALUES( ";
-       
-       String values = ""; 
-       
-       // builds the values 
-       for(int i = 0; i < value.length; i++) {
-           
-           if ( i != value.length - 1) {
-               values += value[i] + ",";
-           }
-           
-           else values += value[i]; 
-       }
-       
-       sql = sql + values +" )"; 
-       
-       
-       // Communicates with the database and adds a row
-       Statement adder = null;
- try {
-  adder = conn.createStatement();
- } catch (SQLException e) {
-  // TODO Auto-generated catch block
-  e.printStackTrace();
- } 
-       int rowAffected = adder.executeUpdate(sql); 
-       
-       
-       if (rowAffected == 1) return true; 
-       else return false; 
-   }
-   
-   // method for populating the feed
-  public String[] Search(String tableName, String column[]) {
-     
-     Statement myStmt = null;
-     int N = column.length;
-     String postSummary[] = new String[N];
-    try {
-     myStmt = conn.createStatement(); 
-        
-        ResultSet myRs = myStmt.executeQuery("select * from" + tableName);
-        
-        while(myRs.next()) {
-         for(int i = 0; i < N; i++) {
-         postSummary[i] = myRs.getString(column[i]); 
-                                                  }
-        }
-    } catch (SQLException e) {
-   // TODO Auto-generated catch block
-   e.printStackTrace();
-  }
-    
-    
-    return postSummary; // return statement
-    } 
-   
-   
-   // method for retrieving a string array for a record in the database
-  public String[] populateFeed(String tableName, String column[], String recordParam) {
-    
-    Statement myStmt = null;
-    int N = column.length;
-    String[] getData = new String[N];
-    
-   
-   try {
-       
-       
-       myStmt = conn.createStatement(); 
-       // retrieves correct ResultSet for the matching record parameter 
-       ResultSet myRs = myStmt.executeQuery("select " + recordParam +  " from " + tableName);
-       
-        // retrieves data into Strin[] 
-        for(int i = 0; i < N; i++) {
-        getData[i] = myRs.getString(column[i]); 
-                                                 }
-       
-   } 
-   catch (SQLException e) {
-  // TODO Auto-generated catch block
-  e.printStackTrace();
- }
-   
-   
-   return getData; // return statement
-   } 
-   
-  
-   public static void main(String args[]){
-	   //test connection 
-	   String dbUrl = "jdbc:mysql://localhost:3306/test"; 
-	   String user  = "root"; 
-	   String pass = "password"; 
+		      // Get a connection 
+		 Connection myConn = DbConnector.establishConnection("test");     
+		     
+		 // test the connection 
+		     try {
+		    	 
+				Statement myStmt = myConn.createStatement();
+				
+				 ResultSet myRs = myStmt.executeQuery("SELECT * from Users");
+		            
+		            while(myRs.next()) {
+		                System.out.println(myRs.getString("idUsers")); 
+		                System.out.println(myRs.getString("name"));
+		                System.out.println(myRs.getString("surname"));
+		                                                      }
+		            System.out.println("TRACE");
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		     
+		    //  test the insert method
+		     try {
+		     String tableName = "Users";
+		     String[] columnNames = {"name", "surname"};
+		     String[] value       = {"John", "Shumway"};
+		     
+				boolean wasAdded = addData(myConn, tableName, columnNames, value);
+				System.out.println(wasAdded);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		
+		   } 
+		        
 	   
-       DbController controller = new DbController(dbUrl, user, pass);
-       String tableName = "Users"; 
-       String[] columnNames = {"name", "surname"};
-       String[] value       = {"Connor", "Shumway"};
-       
-       try {
-		controller.addData(tableName, columnNames, value);
-	} catch (SQLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
+	   
+	   // add table method
+	   public static boolean addTable(String tableName) {
+	       return true;
+	   }
+	   
+	   /* adds one record into a specified table 
+	    * the arguments are the table name, an array of column names,
+	    * and an array of values, values correspond to column names */
+	   public static boolean addData(Connection conn, String tableName, String[] columnNames, 
+	         String[] value) throws SQLException {
+	       
+	       // String to hold the insert command 
+	       String sql = "INSERT INTO " + tableName + "( "; 
+	       String column = ""; 
+	       
+	       // builds the column names 
+	       for(int i = 0; i < columnNames.length; i++) {
+	           
+	           if ( i != columnNames.length - 1) {
+	               column += columnNames[i] + ",";
+	           }
+	           
+	           else column += columnNames[i]; 
+	       }
+	       
+	       sql = sql + column + " )" + " VALUES( ";
+	       
+	       String values = ""; 
+	       
+	       // builds the values 
+	       for(int i = 0; i < value.length; i++) {
+	           
+	           if ( i != value.length - 1) {
+	               values += "'" + value[i] + "',";
+	           }
+	           
+	           else values += "'" + value[i] + "'"; 
+	       }
+	       
+	       sql = sql + values +" )"; 
+	    
+	       // Communicates with the database and adds a row
+	       Statement adder = null;
+	 try {
+	  adder = conn.createStatement();
+	 } catch (SQLException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+	 } 
+	       int rowAffected = adder.executeUpdate(sql); 
+	       if (rowAffected == 1) return true; 
+	       else return false; 
+	   }
+	   
+	   // method for populating the feed
+	  public String[] Search(Connection conn, String tableName, String column[]) {
+	     
+	     Statement myStmt = null;
+	     int N = column.length;
+	     String postSummary[] = new String[N];
+	    try {
+	     myStmt = conn.createStatement(); 
+	        
+	        ResultSet myRs = myStmt.executeQuery("select * from" + tableName);
+	        
+	        while(myRs.next()) {
+	         for(int i = 0; i < N; i++) {
+	         postSummary[i] = myRs.getString(column[i]); 
+	                                                  }
+	        }
+	    } catch (SQLException e) {
+	   // TODO Auto-generated catch block
+	   e.printStackTrace();
+	  }
+	    
+	    
+	    return postSummary; // return statement
+	    } 
+	   
+	   
+	   // method for retrieving a string array for a record in the database
+	  public String[] populateFeed(Connection conn, String tableName, String column[], String recordParam) {
+	    
+	    Statement myStmt = null;
+	    int N = column.length;
+	    String[] getData = new String[N];
+	    
+	   
+	   try {
+	       myStmt = conn.createStatement(); 
+	       // retrieves correct ResultSet for the matching record parameter 
+	       ResultSet myRs = myStmt.executeQuery("select " + recordParam +  " from " + tableName);
+	       
+	        // retrieves data into String[] 
+	        for(int i = 0; i < N; i++) {
+	        getData[i] = myRs.getString(column[i]); 
+	                                                 }   
+	   } 
+	   catch (SQLException e) {
+	  // TODO Auto-generated catch block
+	  e.printStackTrace();
+	 }
+	   return getData; // return statement
+	   } 
+	   
 	}
-       
-   }
-   
-}
