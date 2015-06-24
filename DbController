@@ -4,7 +4,7 @@
 	 * 
 	 ************************************************************************/
 	
-	package libs;
+	package demo;
 	import java.sql.*;
 
 
@@ -16,7 +16,7 @@
 		 Connection myConn = DbConnector.establishConnection("test");     
 		     
 		 // test the connection 
-		     try {
+		/*     try {
 		    	 
 				Statement myStmt = myConn.createStatement();
 				
@@ -31,7 +31,7 @@
 				
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
+			} */
 		     
 		    //  test the insert method
 		     try {
@@ -40,19 +40,41 @@
 		     String[] value       = {"John", "Shumway"};
 		     
 				boolean wasAdded = addData(myConn, tableName, columnNames, value);
-				System.out.println(wasAdded);
+				//System.out.println(wasAdded);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-		
+		     String tableName = "Users";
+		     String condition = "name = 'John'";
+		     try {
+		     boolean deleted = deleteRow(myConn, tableName, condition);
+		     if(deleted == true) {
+		     System.out.println(condition + " deleted");
+		     } else {
+		    	 System.out.println(condition + " not deleted");
+		    	 } 
+		     
+		     } catch (SQLException e) {
+					e.printStackTrace();
+				}
 		   } 
-		        
-	   
-	   
-	   // add table method
-	   public static boolean addTable(String tableName) {
-	       return true;
-	   }
+
+	   // delete method
+	   public static boolean deleteRow(Connection conn, String tableName, 
+		         String condition) throws SQLException {
+		   
+		   String sql = "DELETE FROM " + tableName 
+				       + " WHERE " + condition + ";";
+		   
+		      Statement deleted = null;
+		 	 try {
+		 	  deleted = conn.createStatement();
+		 	 } catch (SQLException e) {
+		 	  e.printStackTrace();
+		 	 } 
+		 	     return deleted.execute(sql);  
+		 	   }
+		  
 	   
 	   /* adds one record into a specified table 
 	    * the arguments are the table name, an array of column names,
