@@ -58,6 +58,33 @@
 					e.printStackTrace();
 				}
 		   } 
+		   
+		    // add table method
+         public static boolean addTable(Connection conn, String tableName, 
+		 String[] columnNames) {
+	 
+	 String sql = "CREATE TABLE IF NOT EXISTS " + tableName + " ("; 
+	 
+	// builds the column names 
+     for(int i = 0; i < columnNames.length; i++) {
+         
+         if ( i != columnNames.length - 1) {
+             sql += columnNames[i] + ",";
+         }
+         
+         else sql += columnNames[i] + " )"; 
+     }
+     
+	  
+	 try {
+		 Statement stmt = conn.createStatement(); 
+		 testing = stmt.executeUpdate(sql);
+	 } catch(SQLException e) {
+		 System.out.println("Sorry, Exceptions");
+	 }
+	 
+	 return true; 
+ }
 
 	   // delete method
 	   public static boolean deleteRow(Connection conn, String tableName, 
@@ -152,7 +179,7 @@
 	   
 	   
 	   // method for retrieving a string array for a record in the database
-	  public String[] populateFeed(Connection conn, String tableName, String column[], String recordParam) {
+	  public String[] getRecord(Connection conn, String tableName, String column[], String recordParam) {
 	    
 	    Statement myStmt = null;
 	    int N = column.length;
