@@ -1,2 +1,2 @@
 # DataController-
-This library contains classes to manipulate data in a mysql database from java classes. 
+This library contains test classes to manipulate data in a mysql database from java classes. 
